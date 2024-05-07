@@ -1,5 +1,4 @@
 const fs = require('fs')
-const download = require('image-downloader')
 const axios = require('axios')
 const PDFDocument = require('pdfkit');
 
@@ -8,9 +7,9 @@ async function downloadImagesAndCreatePDF() {
     // Call API
     const response = await axios.get('https://api.hoc10.vn/api/get-detail-page', {
       params: {
-        book_id: 765,
+        book_id: 648,
         page: 0,
-        book_name: 'sgt-toan-12-tap-1',
+        book_name: 'sgt-toan-5-tap-2',
         limit: 0,
         status: '',
         app_id: 68
