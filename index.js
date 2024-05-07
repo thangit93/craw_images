@@ -1,24 +1,62 @@
 const fs = require('fs')
 const download = require('image-downloader')
-const imgToPDF = require('image-to-pdf')
+const axios = require('axios')
+const PDFDocument = require('pdfkit');
 
-const downloadImages = async () => {
-  for (let i = 1; i <= 22; i++) {
-    let options = {
-      url: 'https://hvegjijo7jobj.vcdn.cloud/E_Learning/page/' + i + '_Toan10T1_07_04_2022_v20.jpg', dest: '/app/images' // will be saved to /path/to/dest/image.jpg
+async function downloadImagesAndCreatePDF() {
+  try {
+    // Call API
+    const response = await axios.get('https://api.hoc10.vn/api/get-detail-page', {
+      params: {
+        book_id: 765,
+        page: 0,
+        book_name: 'sgt-toan-12-tap-1',
+        limit: 0,
+        status: '',
+        app_id: 68
+      }
+    });
+
+    if (response.data.status === 'success') {
+      const listPage = response.data.data.list_page;
+      const pdfDoc = new PDFDocument({ autoFirstPage: false });
+      const pdfStream = fs.createWriteStream(`pdf/${response.data.data.title}.pdf`);
+
+      pdfDoc.pipe(pdfStream);
+
+
+      for (const page of listPage) {
+        const imageUrl = `https://hoc10.monkeyuni.net/${page.background}`;
+        const imageName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+
+        // Download image
+        const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+        fs.writeFileSync(imageName, imageResponse.data);
+
+        // Get image dimensions
+        const image = new PDFDocument({size: 'Letter'});
+        const imageSize = image.openImage(imageName);
+        const imageWidth = imageSize.width;
+        const imageHeight = imageSize.height;
+
+        // Add page to PDF
+        pdfDoc.addPage({
+          size: [imageWidth, imageHeight]
+        }).image(imageName, 0, 0, {width: imageWidth, height: imageHeight});
+
+
+        // Delete downloaded image after adding to PDF
+        fs.unlinkSync(imageName);
+      }
+
+      pdfDoc.end();
+      console.log('PDF created successfully.');
+    } else {
+      console.error('Failed to fetch data from API.');
     }
-    filename = await download.image(options)
-    console.log('Saved to', filename)
+  } catch (error) {
+    console.error('Error occurred:', error);
   }
 }
 
-downloadImages()
-
-// const convertImagesToPdf = async () => {
-//   fs.readdir('/app/images', (err, files) => {
-//     console.log(files);
-
-//   })
-// }
-
-// convertImagesToPdf()
+downloadImagesAndCreatePDF();

@@ -3,7 +3,7 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "image-downloader": "^4.3.0",
-    "image-to-pdf": "^1.0.0"
+    "axios": "^1.6.8",
+    "pdfkit": "^0.15.0"
   }
 }
