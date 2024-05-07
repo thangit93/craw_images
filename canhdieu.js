@@ -5,6 +5,7 @@ const { program } = require('commander');
 
 async function downloadImagesAndCreatePDF() {
   try {
+    //Sample: node canhdieu.js https://hoc10.vn/doc-sach/sgt-toan-5-tap-2/8/648/0/
     program
         .option('-l, --link <char>');
     program.parse();
