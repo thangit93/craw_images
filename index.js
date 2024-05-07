@@ -1,15 +1,28 @@
 const fs = require('fs')
 const axios = require('axios')
 const PDFDocument = require('pdfkit');
+const { program } = require('commander');
 
 async function downloadImagesAndCreatePDF() {
   try {
+    program
+        .option('-l, --link <char>');
+    program.parse();
+
+    const options = program.opts();
+
+    let link = options.link
+    if (link === undefined) {
+      link = program.args[0]
+    }
+    const bookId = link.split('/')[6]
+    const bookName = link.split('/')[4]
     // Call API
     const response = await axios.get('https://api.hoc10.vn/api/get-detail-page', {
       params: {
-        book_id: 648,
+        book_id: bookId,
         page: 0,
-        book_name: 'sgt-toan-5-tap-2',
+        book_name: bookName,
         limit: 0,
         status: '',
         app_id: 68
@@ -46,6 +59,7 @@ async function downloadImagesAndCreatePDF() {
 
         // Delete downloaded image after adding to PDF
         fs.unlinkSync(imageName);
+        console.log(`Crawl done image: ${imageName}`);
       }
 
       pdfDoc.end();
@@ -58,4 +72,6 @@ async function downloadImagesAndCreatePDF() {
   }
 }
 
-downloadImagesAndCreatePDF();
+downloadImagesAndCreatePDF().then(() => {
+  console.log('DONE!')
+});
