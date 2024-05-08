@@ -1,6 +1,7 @@
 const fs = require('fs')
 const axios = require('axios')
 const PDFDocument = require('pdfkit');
+const { program } = require('commander');
 
 const BASE_URL = 'https://apitaphuan.nxbgd.vn';
 
@@ -23,34 +24,51 @@ async function downloadImage(url, imageName) {
 
 async function mergeImagesToPDF() {
   try {
+    program
+        .option('-l, --link <char>')
+        .option('-p, --path <char>');
+    program.parse();
+
+    const options = program.opts();
+
+    let link = options.link
+    if (link === undefined) {
+      link = program.args[0]
+    }
+    const bookId = link.split('/')[5]
+    const path = options.path ?? 0
+
+
     const response = await axios.post(`${BASE_URL}/api/training-course/get-by-id-home-page`, {
-      ID: '6f3472c8-cd3a-7367-8947-fe5995409e34'
+      ID: bookId
     });
     const { data: Data } = response;
-    const {Childrens, FileName} = Data.Data.ListDocumentGroup[0].Childrens[0]
+    const {Childrens, FileName} = Data.Data.ListDocumentGroup[0].Childrens[path]
 
     const pdfDoc = new PDFDocument({ autoFirstPage: false });
     const writeStream = fs.createWriteStream(`pdf/${FileName}.pdf`);
     pdfDoc.pipe(writeStream);
 
     for (const child of Childrens) {
-      const frontImage = await downloadImage(child.Front.LinkFile, child.Front.FileName);
-      const backImage = await downloadImage(child.Back.LinkFile, child.Back.FileName);
+      const frontImage = await downloadImage(child.Front.LinkFile, `images/${child.Front.FileName}`);
+      const backImage = await downloadImage(child.Back.LinkFile, `images/${child.Back.FileName}`);
 
       // Add front image to PDF
       if (frontImage) {
         pdfDoc.addPage({
           size: frontImage
-        }).image(child.Front.FileName, 0, 0, {width: frontImage[0], height: frontImage[1]});
-        fs.unlinkSync(child.Front.FileName);
+        }).image(`images/${child.Front.FileName}`, 0, 0, {width: frontImage[0], height: frontImage[1]});
+        fs.unlinkSync(`images/${child.Front.FileName}`);
+        console.log(`Crawl done image: ${child.Front.FileName}`);
       }
       
       // Add back image to PDF
       if (backImage) {
         pdfDoc.addPage({
           size: backImage
-        }).image(child.Back.FileName, 0, 0, {width: backImage[0], height: backImage[1]});
-        fs.unlinkSync(child.Back.FileName);
+        }).image(`images/${child.Back.FileName}`, 0, 0, {width: backImage[0], height: backImage[1]});
+        fs.unlinkSync(`images/${child.Back.FileName}`);
+        console.log(`Crawl done image: ${child.Back.FileName}`);
       }
     }
 
