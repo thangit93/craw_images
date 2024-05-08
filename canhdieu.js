@@ -40,7 +40,7 @@ async function downloadImagesAndCreatePDF() {
 
       for (const page of listPage) {
         const imageUrl = `https://hoc10.monkeyuni.net/${page.background}`;
-        const imageName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+        const imageName = `images/${imageUrl.substring(imageUrl.lastIndexOf('/') + 1)}`;
 
         // Download image
         const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });

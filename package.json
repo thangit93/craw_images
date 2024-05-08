@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "canhdieu": "node canhdieu.js"
+    "canhdieu": "node canhdieu.js",
+    "taphuan": "node taphuan.js"
   },
   "dependencies": {
     "axios": "^1.6.8",
