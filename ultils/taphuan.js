@@ -37,8 +37,6 @@ async function mergeImagesToPDF(link, path = 0) {
     const { data: Data } = response;
     const { Childrens, FileName } = Data.Data.ListDocumentGroup[0].Childrens[path];
 
-    console.log(Data.Data.ListDocumentGroup[0].Childrens);
-
     const pdfDoc = new PDFDocument({ autoFirstPage: false });
     const writeStream = fs.createWriteStream(`pdf/${FileName}.pdf`);
     pdfDoc.pipe(writeStream);
@@ -53,7 +51,6 @@ async function mergeImagesToPDF(link, path = 0) {
           size: frontImage
         }).image(`images/${child.Front.FileName}`, 0, 0, { width: frontImage[0], height: frontImage[1] });
         fs.unlinkSync(`images/${child.Front.FileName}`);
-        console.log(`Crawl done image: ${child.Front.FileName}`);
       }
 
       // Add back image to PDF
