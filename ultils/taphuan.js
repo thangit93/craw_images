@@ -20,7 +20,7 @@ async function downloadImage(url, imageName) {
       const imageWidth = imageSize.width;
       const imageHeight = imageSize.height;
     
-      return [imageWidth, imageHeight];
+      return [imageWidth/4, imageHeight/4];
   } catch (e) {
     console.log(e.message)
   }
