@@ -1,4 +1,8 @@
 {
+  "name": "craw-image",
+  "version": "1.0.0",
+  "description": "Tải pdf từ taphuan - hoc10",
+  "author": "thangit93",
   "scripts": {
     "canhdieu": "node main.js -t canhdieu",
     "taphuan": "node main.js -t taphuan",
