@@ -1,11 +1,15 @@
 {
   "name": "craw-image",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "Tải pdf từ taphuan - hoc10",
   "author": "thangit93",
+  "main": "index.js",
   "scripts": {
-    "canhdieu": "node main.js -t canhdieu",
-    "taphuan": "node main.js -t taphuan",
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "canhdieu": "node index.js -t canhdieu",
+    "taphuan": "node index.js -t taphuan",
     "process": "node process_csv.js"
   },
   "dependencies": {
@@ -13,5 +17,8 @@
     "commander": "^12.0.0",
     "csv-parser": "^3.0.0",
     "pdfkit": "^0.15.0"
+  },
+  "devDependencies": {
+    "electron": "^31.0.1"
   }
 }
