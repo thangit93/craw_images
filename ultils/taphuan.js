@@ -1,8 +1,16 @@
 const fs = require('fs');
 const axios = require('axios');
 const PDFDocument = require('pdfkit');
+const https = require("https");
+
+const agent = new https.Agent({
+  ca: fs.readFileSync("/etc/ssl/certs/ca-certificates.crt"),
+  keepAlive: true,
+});
 
 const BASE_URL = 'https://apitaphuan.nxbgd.vn';
+
+const api = axios.create({ httpsAgent: agent, timeout: 15000 });
 
 async function downloadImage(url, imageName) {
   if (!url) return null;
@@ -10,6 +18,7 @@ async function downloadImage(url, imageName) {
     const response = await axios({
         method: 'GET',
         url: `${BASE_URL}/${url}`,
+        httpsAgent: agent,
         responseType: 'arraybuffer'
       });
       fs.writeFileSync(imageName, response.data);
@@ -30,8 +39,9 @@ async function downloadImage(url, imageName) {
 async function mergeImagesToPDF(link, path = 0) {
   try {
     const bookId = link.split('/')[5];
+    
 
-    const response = await axios.post(`${BASE_URL}/api/training-course/get-by-id-home-page`, {
+    const response = await api.post(`${BASE_URL}/api/training-course/get-by-id-home-page`, {
       ID: bookId
     });
     const { data: Data } = response;
