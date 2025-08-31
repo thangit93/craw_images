@@ -4,8 +4,9 @@ const PDFDocument = require('pdfkit');
 const https = require("https");
 
 const agent = new https.Agent({
-  ca: fs.readFileSync("/etc/ssl/certs/ca-certificates.crt"),
-  keepAlive: true,
+  // ca: fs.readFileSync("/etc/ssl/certs/ca-certificates.crt"),
+  // keepAlive: true,
+  rejectUnauthorized: false
 });
 
 const BASE_URL = 'https://apitaphuan.nxbgd.vn';
@@ -61,6 +62,7 @@ async function mergeImagesToPDF(link, path = 0) {
           size: frontImage
         }).image(`images/${child.Front.FileName}`, 0, 0, { width: frontImage[0], height: frontImage[1] });
         fs.unlinkSync(`images/${child.Front.FileName}`);
+         console.log(`Crawl done image: ${child.Front.FileName}`);
       }
 
       // Add back image to PDF
